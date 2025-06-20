@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.quizly.mapper.QuizMapper">
+
+    <!-- 퀴즈 1개 랜덤 조회 -->
+    <select id="findRandomOne" resultType="com.quizly.domain.Quiz">
+        SELECT TOP 1 *
+        FROM quiz
+        ORDER BY NEWID()
+    </select>
+
+    <!-- 퀴즈 종료 후 유저정보등록 -->
+    <insert id="insertUserInfo" parameterType="com.quizly.domain.Quiz">
+        INSERT INTO quiz (question, answer)
+        VALUES (#{question}, #{answer})
+    </insert>
+
+</mapper>
