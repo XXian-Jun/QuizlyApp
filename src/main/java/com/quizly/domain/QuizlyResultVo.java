@@ -6,12 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class QuizlyVo {
+public class QuizlyResultVo {
 
-    int id;
-    String question;
-    String answer;
-    String hint;
     String userNm;
+    int count;
 
 }

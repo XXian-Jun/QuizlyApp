@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.quizly.mapper.QuizlyMapper">
+
+    <!-- 퀴즈 1개 랜덤 조회 -->
+    <select id="findRandomOne" resultType="com.quizly.domain.QuizlyVo">
+        SELECT * FROM tb_quiz
+        ORDER BY RAND()
+        LIMIT 1
+    </select>
+
+    <!-- 상위 10명 -->
+    <select id="findUserRankTop10" resultType="com.quizly.domain.QuizlyResultVo">
+        SELECT
+                 a.user_nm as userNm
+                ,(select count(*) from tb_quiz_result where user_nm = a.user_nm ) as count
+          FROM (
+                SELECT user_nm
+                FROM tb_quiz_result tqr
+                GROUP BY user_nm
+                ) a
+        ORDER BY count DESC
+        LIMIT 10
+    </select>
+
+    <!-- 퀴즈 종료 후 유저정보등록 -->
+    <insert id="insertUserInfo" parameterType="com.quizly.domain.QuizlyVo">
+        INSERT INTO tb_quiz_result (id , user_nm)
+        VALUES (#{id}, #{userNm})
+    </insert>
+
+</mapper>
