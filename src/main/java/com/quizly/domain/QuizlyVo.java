@@ -10,8 +10,9 @@ public class QuizlyVo {
 
     int id;
     String question;
-    String answer;
     String hint;
     String userNm;
+    String answer;
+
 
 }

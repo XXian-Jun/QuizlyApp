@@ -1,6 +1,7 @@
 package com.quizly.service.impl;
 
-import com.quizly.domain.QuizlyResultVo;
+import com.quizly.dto.QuizlyResponseDto;
+import com.quizly.dto.QuizlyResultResponseDto;
 import com.quizly.domain.QuizlyVo;
 import com.quizly.mapper.QuizlyMapper;
 import com.quizly.service.QuizlyService;
@@ -15,10 +16,8 @@ public class QuizlyServiceImpl implements QuizlyService {
     @Autowired
     private QuizlyMapper quizlyMapper;
 
-
-
     @Override
-    public QuizlyVo findRandomOne() {
+    public QuizlyResponseDto findRandomOne() {
         return this.quizlyMapper.findRandomOne();
     }
 
@@ -28,7 +27,12 @@ public class QuizlyServiceImpl implements QuizlyService {
     }
 
     @Override
-    public ArrayList<QuizlyResultVo> findUserRankTop10() {
+    public ArrayList<QuizlyResultResponseDto> findUserRankTop10() {
         return this.quizlyMapper.findUserRankTop10();
+    }
+
+    @Override
+    public int findCompareAnswer(QuizlyVo entity) {
+        return this.quizlyMapper.findCompareAnswer(entity);
     }
 }

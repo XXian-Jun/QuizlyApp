@@ -6,14 +6,18 @@
 <mapper namespace="com.quizly.mapper.QuizlyMapper">
 
     <!-- 퀴즈 1개 랜덤 조회 -->
-    <select id="findRandomOne" resultType="com.quizly.domain.QuizlyVo">
-        SELECT * FROM tb_quiz
+    <select id="findRandomOne" resultType="com.quizly.dto.QuizlyResponseDto">
+           SELECT
+                  id
+                 ,question
+                 ,hint
+            FROM tb_quiz
         ORDER BY RAND()
-        LIMIT 1
+           LIMIT 1
     </select>
 
     <!-- 상위 10명 -->
-    <select id="findUserRankTop10" resultType="com.quizly.domain.QuizlyResultVo">
+    <select id="findUserRankTop10" resultType="com.quizly.dto.QuizlyResultResponseDto">
         SELECT
                  a.user_nm as userNm
                 ,(select count(*) from tb_quiz_result where user_nm = a.user_nm ) as count
@@ -24,6 +28,14 @@
                 ) a
         ORDER BY count DESC
         LIMIT 10
+    </select>
+
+    <select id="findCompareAnswer" parameterType="com.quizly.domain.QuizlyVo" resultType="int">
+        SELECT
+                COUNT(*)
+          FROM tb_quiz
+         WHERE id = #{id}
+           AND TRIM(answer) = #{answer}
     </select>
 
     <!-- 퀴즈 종료 후 유저정보등록 -->

@@ -1,0 +1,47 @@
+/* src/Quizregister.css */
+
+.register-container {
+  max-width: 500px;
+  margin: 100px auto;
+  padding: 40px;
+  border-radius: 15px;
+  background-color: #fdfdfd;
+  text-align: center;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid #eaeaea;
+}
+
+.register-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.register-score {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.register-input {
+  padding: 12px;
+  width: 80%;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.register-button {
+  padding: 10px 25px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #0056b3;
+}

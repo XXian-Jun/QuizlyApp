@@ -1,6 +1,7 @@
 package com.quizly.controller;
 
-import com.quizly.domain.QuizlyResultVo;
+import com.quizly.dto.QuizlyResponseDto;
+import com.quizly.dto.QuizlyResultResponseDto;
 import com.quizly.domain.QuizlyVo;
 import com.quizly.service.QuizlyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,20 @@ public class QuizlyController {
     private QuizlyService QuizlyService;
 
     @GetMapping("/random")
-    public QuizlyVo getRandomOne (){
+    public QuizlyResponseDto getRandomOne (){
         return this.QuizlyService.findRandomOne();
     }
 
     @GetMapping("/rank")
-    public ArrayList<QuizlyResultVo> getUserRank (){
+    public ArrayList<QuizlyResultResponseDto> getUserRank (){
         return this.QuizlyService.findUserRankTop10();
     }
+
+    @PostMapping("/compareAnswer")
+    public int getAnswerCompare(@RequestBody QuizlyVo entity){
+        return this.QuizlyService.findCompareAnswer(entity);
+    }
+
 
     @PostMapping("/insert-info")
     public int insertUserInfo(@RequestBody ArrayList<QuizlyVo> list){

@@ -1,0 +1,57 @@
+/* src/QuizRank.css */
+
+.rank-container {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  border: 2px solid #f0f0f0;
+  text-align: center;
+}
+
+.rank-title {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.rank-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rank-list li {
+  display: flex;
+  justify-content: space-between;  /* 좌우 끝에 배치 */
+  align-items: center;
+  font-size: 1.1rem;
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.rank-list li:last-child {
+  border-bottom: none;
+}
+
+.rank-loading {
+  color: #777;
+}
+
+.home-button {
+  margin-top: 30px;
+  padding: 10px 25px;
+  font-size: 1rem;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: #574b90;
+}
