@@ -15,3 +15,15 @@ Quizly는 CS지식의 기초 문제를 풀면서 기본적인 CS지식에 대량
 - Backend: Spring Boot 
 - 데이터베이스: MySQL 
 - server: Docker (local)
+
+## 메인
+![메인](screenshot/main.png)
+
+## 퀴즈 풀이 페이지 
+![퀴즈풀이](screenshot/sub.png)
+
+## 퀴즈 풀이 후 랭킹 등록 페이지
+![랭킹등록](screenshot/register.png)
+
+## 랭킹 페이지
+![랭킹](screenshot/rank.png)
