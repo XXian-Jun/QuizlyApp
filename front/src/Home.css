@@ -1,0 +1,52 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #282c34;
+  color: white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.logo {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+}
+
+.nav-button.notice {
+  margin-right: 10px;
+}
+
+.nav-button.login {
+  background-color: #61dafb;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-weight: bold;
+  color: #282c34;
+  margin-right: 30px;
+}
+
+.main-content {
+  text-align: center;
+  margin-top: 120px; /* 헤더 높이만큼 여유 */
+  padding: 20px;
+}
+
+.main-button {
+  margin: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
