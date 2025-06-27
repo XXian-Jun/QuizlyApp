@@ -1,5 +1,8 @@
 package com.quizly.controller;
 
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
+import com.quizly.domain.QuizlyUserVo;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -33,8 +36,30 @@ public class KakaoAPIController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<?> kakaoCallback(@RequestParam String code) {
-        // 1. 카카오에 access_token 요청
+    public void callback(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 1) 카카오에서 access_token 요청
+        String accessToken = requestAccessToken(code);
+        // 2) 세션에 토큰 저장 (userInfo 대신 토큰만 저장)
+        request.getSession().setAttribute("kakaoAccessToken", accessToken);
+        // 3) 로그인 완료 후 프론트 메인 페이지로 리다이렉트
+        response.sendRedirect("http://localhost:3000");
+    }
+
+    @GetMapping("/user/me")
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+        String accessToken = (String) request.getSession().getAttribute("kakaoAccessToken");
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 카카오 API 호출해서 사용자 정보 조회
+        QuizlyUserVo userInfo = requestUserInfo(accessToken); // 기존에 사용자 정보 조회하는 로직
+
+        return ResponseEntity.ok(userInfo);
+    }
+
+
+    private String requestAccessToken(String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -44,37 +69,53 @@ public class KakaoAPIController {
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
         params.add("redirect_uri", redirectUri);
-        params.add("code", code); // 카카오가 보내준 인가코드
+        params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<Map> tokenResponse = restTemplate.postForEntity(tokenUrl, request, Map.class);
-        String accessToken = (String) tokenResponse.getBody().get("access_token");
+        ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, request, Map.class);
 
-        // 2. access_token으로 사용자 정보 요청
-        HttpHeaders infoHeaders = new HttpHeaders();
-        infoHeaders.set("Authorization", "Bearer " + accessToken);
-        HttpEntity<String> userInfoRequest = new HttpEntity<>(infoHeaders);
+        Map<String, Object> responseBody = response.getBody();
 
-        ResponseEntity<Map> userInfoResponse = restTemplate.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.GET,
-                userInfoRequest,
-                Map.class
-        );
+        if (responseBody == null || !responseBody.containsKey("access_token")) {
+            throw new RuntimeException("Failed to get access token from Kakao");
+        }
 
-        // 3. 사용자 정보 파싱해서 출력 or 응답
-        Map<String, Object> kakaoAccount = (Map<String, Object>) userInfoResponse.getBody().get("kakao_account");
+        return (String) responseBody.get("access_token");
+    }
+
+    private QuizlyUserVo requestUserInfo(String accessToken) {
+        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, Map.class);
+
+        Map<String, Object> body = response.getBody();
+
+        if (body == null) {
+            throw new RuntimeException("Failed to get user info from Kakao");
+        }
+
+        // 카카오 사용자 정보 파싱 (예: nickname, email)
+        Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
         String nickname = (String) profile.get("nickname");
         String email = (String) kakaoAccount.get("email");
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("nickname", nickname);
-        result.put("email", email);
-        return ResponseEntity.ok(result);
+        // UserInfo는 직접 정의한 DTO 또는 간단히 Map으로 대체 가능
+        QuizlyUserVo userInfo = new QuizlyUserVo();
+        userInfo.setNickname(nickname);
+
+        return userInfo;
     }
+
+
+
 
 
 }
