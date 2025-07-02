@@ -7,31 +7,53 @@ function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
+
   const handleKakaoLogin = () => {
+    localStorage.setItem("triedLogin", "true");
     window.location.href = "http://localhost:9090/api/kakao/login";
   };
 
-  const handleLogout = () => {
-    window.location.href = "http://localhost:9090/api/kakao/login";
+  const handleLogout = async (accessToken) => {
+    axios.get("http://localhost:9090/api/kakao/logout", {
+      withCredentials: true // 세션 쿠키 전송 필요 시
+    })
+      .then(res => {
+        localStorage.removeItem("accessToken"); // 클라이언트 토큰 제거
+        window.location.href = "/";
+        localStorage.removeItem("triedLogin");
+      })
+      .catch(err => {
+        console.error("로그아웃 실패", err);
+      });
   };
 
-
-  // 백엔드에 로그인된 사용자 정보 요청
   const fetchUserInfo = async () => {
     try {
       const res = await axios.get('http://localhost:9090/api/kakao/user/me', {
         withCredentials: true, // 세션 쿠키 포함
       });
       setUser(res.data); // 사용자 정보 저장
-      console.log(res.data);
     } catch (err) {
-      console.log("로그인 상태 아님");
       setUser(null);
     }
   };
 
   // 처음 로딩 시 로그인 상태 확인
   useEffect(() => {
+    const triedLogin = localStorage.getItem("triedLogin");
+    if (!triedLogin) return;
+
+    const fetchUserInfo = async () => {
+      try {
+        const res = await axios.get('http://localhost:9090/api/kakao/user/me', {
+          withCredentials: true,
+        });
+        setUser(res.data);
+      } catch (err) {
+        setUser(null);
+      }
+    };
+
     fetchUserInfo();
   }, []);
 
@@ -57,7 +79,7 @@ function Home() {
       <main className="main-content">
         <h1>Quizly</h1>
         <h5>Quizly는 컴퓨터 관련 CS지식에 대한 퀴즈로 이루어져 있습니다.</h5>
-        <button className="main-button" onClick={() => navigate('/quiz')}>
+        <button className="main-button" onClick={() => navigate('/quiz', { state: { nickname: user?.nickname ?? null }})}>
           퀴즈 풀기
         </button>
         <button className="main-button" onClick={() => navigate('/QuizRank')}>

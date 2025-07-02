@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Quiz.css';
 import { useNavigate } from 'react-router-dom'; // 추가
 
 function Quiz() {
+  const location = useLocation();
+  const nickname = location.state?.nickname ?? '';
+
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -13,7 +17,6 @@ function Quiz() {
   const [correctAnswers, setCorrectAnswers] = useState([]);
 
   const navigate = useNavigate(); // 페이지 이동용
-
   const fetchQuiz = async () => {
     setPass(null);
     setLoading(true);
@@ -38,9 +41,7 @@ function Quiz() {
       const result = response.data;
       setPass(result);
 
-      console.log(result);
       if (result > 0) {
-
         setCorrectAnswers(prev => [
           ...prev,
           {
@@ -63,6 +64,7 @@ function Quiz() {
             state: {
               quizId: id,
               userAnswer: answer,
+              userName : nickname,
               score: count,
               correct: correctAnswers,
             },
