@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.cors.CorsConfiguration;
@@ -20,9 +21,12 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults()) // CORS 활성화
                 .csrf(csrf -> csrf.disable())   // CSRF 비활성화 (API 서버일 때)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 사용
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/kakao/**").permitAll()
-                        .requestMatchers("/api/quiz/**").permitAll()
+                        .requestMatchers("/api/kakao/login", "/api/kakao/callback").permitAll()
+                        .requestMatchers("/api/kakao/user/me", "/api/kakao/logout").authenticated()
                         .anyRequest().authenticated()
                 );
 

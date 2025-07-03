@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -37,11 +39,18 @@ public class KakaoAPIController {
 
     @GetMapping("/callback")
     public void callback(@RequestParam String code, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 1) 카카오에서 access_token 요청
         String accessToken = requestAccessToken(code);
-        // 2) 세션에 토큰 저장 (userInfo 대신 토큰만 저장)
+        QuizlyUserVo userInfo = requestUserInfo(accessToken);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userInfo,
+                null,
+                userInfo.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 세션에 SecurityContext 저장
+        request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+       // accessToken도 세션에 저장(필요하다면)
         request.getSession().setAttribute("kakaoAccessToken", accessToken);
-        // 3) 로그인 완료 후 프론트 메인 페이지로 리다이렉트
         response.sendRedirect("http://localhost:3000");
     }
 
@@ -58,6 +67,35 @@ public class KakaoAPIController {
         return ResponseEntity.ok(userInfo);
     }
 
+    @GetMapping("/logout")
+    public ResponseEntity<?>  logout(HttpServletRequest request) {
+        String accessToken = (String) request.getSession().getAttribute("kakaoAccessToken");
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No access token found in session.");
+        }
+
+        try {
+            // 카카오 unlink 요청
+            String unlinkUrl = "https://kapi.kakao.com/v1/user/unlink";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + accessToken);
+            HttpEntity<String> unlinkRequest = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    unlinkUrl,
+                    HttpMethod.POST,
+                    unlinkRequest,
+                    Map.class
+            );
+
+            // 세션에서 토큰 제거
+            request.getSession().removeAttribute("kakaoAccessToken");
+            return ResponseEntity.ok("Successfully logged out from Kakao");
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Kakao logout failed: " + e.getMessage());
+        }
+    }
 
     private String requestAccessToken(String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
