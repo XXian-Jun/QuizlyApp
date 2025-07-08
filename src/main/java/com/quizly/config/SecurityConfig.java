@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션 사용
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/quiz/*").permitAll()
                         .requestMatchers("/api/kakao/login", "/api/kakao/callback").permitAll()
                         .requestMatchers("/api/kakao/user/me", "/api/kakao/logout").authenticated()
                         .anyRequest().authenticated()
