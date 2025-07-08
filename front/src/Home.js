@@ -27,16 +27,6 @@ function Home() {
       });
   };
 
-  const fetchUserInfo = async () => {
-    try {
-      const res = await axios.get('http://localhost:9090/api/kakao/user/me', {
-        withCredentials: true, // 세션 쿠키 포함
-      });
-      setUser(res.data); // 사용자 정보 저장
-    } catch (err) {
-      setUser(null);
-    }
-  };
 
   // 처음 로딩 시 로그인 상태 확인
   useEffect(() => {
