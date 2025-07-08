@@ -6,6 +6,8 @@ import Quiz from './Quiz';
 import RegisterPage from './Quizregister';
 import Home from './Home';
 import QuizRank from './QuizRank';
+import PuterChat from './PuterChat';
+
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/Quiz" element={<Quiz />} />
         <Route path="/Quizregister" element={<RegisterPage />} />
         <Route path="/QuizRank" element={<QuizRank />} />
+        <Route path="/PuterChat" element={<PuterChat />} />
+
       </Routes>
     </BrowserRouter>
   );
