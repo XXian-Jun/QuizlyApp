@@ -26,6 +26,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/kakao/login", "/api/kakao/callback").permitAll()
+                        .requestMatchers("/api/quiz/**").permitAll()
                         .requestMatchers("/api/gpt/ask").permitAll()
                         .requestMatchers("/api/kakao/user/me", "/api/kakao/logout").authenticated()
                         .anyRequest().authenticated()

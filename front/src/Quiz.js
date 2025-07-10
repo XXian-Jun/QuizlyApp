@@ -107,7 +107,11 @@ function Quiz() {
       <button className="quiz-button" onClick={handleAnswer}>제출</button> &nbsp;
       <button className="quiz-button" onClick={() => setShowModal(true)}>
         ai-질문
+      </button>&nbsp;&nbsp;
+      <button className="quiz-button" onClick={() => navigate('/')}>
+        뒤로가기
       </button>
+
 
       <ReactModal
         isOpen={showModal}
