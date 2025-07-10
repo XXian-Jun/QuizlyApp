@@ -75,9 +75,6 @@ function Home() {
         <button className="main-button" onClick={() => navigate('/QuizRank')}>
           랭킹 보기
         </button>
-       <button className="main-button" onClick={() => navigate('/PuterChat')}>
-          ai-질문
-        </button>
       </main>
     </div>
   );

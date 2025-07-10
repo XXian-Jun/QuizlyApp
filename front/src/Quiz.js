@@ -1,8 +1,12 @@
+// Quiz.js
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ReactModal from 'react-modal';
+import GptChat from './PuterChat';  // GptChat 컴포넌트 import
 import './Quiz.css';
-import { useNavigate } from 'react-router-dom'; // 추가
+
+ReactModal.setAppElement('#root');
 
 function Quiz() {
   const location = useLocation();
@@ -16,7 +20,10 @@ function Quiz() {
   const [count, setCount] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState([]);
 
-  const navigate = useNavigate(); // 페이지 이동용
+  const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
+
   const fetchQuiz = async () => {
     setPass(null);
     setLoading(true);
@@ -42,35 +49,27 @@ function Quiz() {
       setPass(result);
 
       if (result > 0) {
-        setCorrectAnswers(prev => [
-          ...prev,
-          {
-            id: quiz.id,
-          },
-        ]);
-
+        setCorrectAnswers(prev => [...prev, { id: quiz.id }]);
         setCount(count + 1);
         setTimeout(() => {
           fetchQuiz();
           setAnswer('');
         }, 500);
       } else {
-
         if (count === 0) {
           alert("조금더 공부를 한후 도전해주세요");
-          navigate('/', {});
+          navigate('/');
         } else {
           navigate('/Quizregister', {
             state: {
               quizId: id,
               userAnswer: answer,
-              userName : nickname,
+              userName: nickname,
               score: count,
               correct: correctAnswers,
             },
           });
         }
-
       }
     } catch (error) {
       console.error('에러 발생:', error);
@@ -92,21 +91,46 @@ function Quiz() {
   if (!quiz) return <p>퀴즈가 없습니다.</p>;
 
   return (
-   <div className="quiz-container">
-    <h3 className="quiz-question">{quiz.question}</h3>
-    <h5 className="quiz-hint">{quiz.hint}</h5>
-    <input
-      className="quiz-input"
-      type="text"
-      value={answer}
-      onChange={(e) => setAnswer(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') handleAnswer();
-      }}
-    />
-    <br />
-    <button className="quiz-button" onClick={handleAnswer}>제출</button>
-  </div>
+    <div className="quiz-container">
+      <h3 className="quiz-question">{quiz.question}</h3>
+      <h5 className="quiz-hint">{quiz.hint}</h5>
+      <input
+        className="quiz-input"
+        type="text"
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleAnswer();
+        }}
+      />
+      <br />
+      <button className="quiz-button" onClick={handleAnswer}>제출</button> &nbsp;
+      <button className="quiz-button" onClick={() => setShowModal(true)}>
+        ai-질문
+      </button>
+
+      <ReactModal
+        isOpen={showModal}
+        onRequestClose={() => setShowModal(false)}
+        style={{
+          content: {
+            width: '90%',
+            maxWidth: '720px',
+            height: '80%',
+            margin: 'auto',
+            borderRadius: '16px',
+            padding: '0',
+            border: 'none',
+            overflow: 'auto',
+          },
+          overlay: {
+            backgroundColor: 'rgba(0,0,0,0.4)',
+          },
+        }}
+      >
+        <GptChat onClose={() => setShowModal(false)} />
+      </ReactModal>
+    </div>
   );
 }
 
